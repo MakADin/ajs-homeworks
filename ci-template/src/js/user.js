@@ -7,5 +7,8 @@ export function loadUser(id) {
 
 // eslint-disable-next-line no-unused-vars
 export function saveUser(user) {
+  if (user.id) {
+    return 'Success';
+  }
   throw new Error('Unimplemented');
 }
