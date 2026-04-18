@@ -1,5 +1,5 @@
-import { loadUser, saveUser } from "../user";
-import { httpGet } from "../http";
+import { loadUser, saveUser, getLevel } from "../user";
+import fetchData, { httpGet } from "../http";
 
 jest.mock("../http");
 
@@ -28,3 +28,26 @@ test("should throw error, if user has no id", () => {
     saveUser(userWithoutId);
   }).toThrow();
 });
+
+test("ответ сервера о статусе OK", () => {
+  fetchData.mockReturnValue({ status: "ok", level: 1 });
+
+  const result = getLevel(1);
+
+  expect(result).toBe(`Ваш текущий уровень: 1`);
+});
+
+test("проверка на ответ сервера - ERROR", () => {
+  fetchData.mockReturnValue({ status: "error"});
+
+  const result = getLevel(1);
+  expect(result).toBe(`Информация об уровне временно недоступна`);
+});
+
+test("ошибка - сервер не доступен", () => {
+  fetchData.mockImplementation(() => {
+    throw new Error('server error');
+  })
+  const result = getLevel(1);
+  expect(result).toBe(`Информация об уровне временно недоступна`);
+})
